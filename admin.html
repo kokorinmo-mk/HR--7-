@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>HR-день | Встреча топ-клиентов | 7 августа 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Подключаем библиотеку Inputmask -->
+    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.8/dist/inputmask.min.js"></script>
+</head>
+<body>
+    <section class="hero">
+        <div class="container">
+            <div class="badge">Только для ключевых клиентов</div>
+            <h1>HR-день для топ-команд<br>7 августа 2026</h1>
+            <p class="hero-desc">
+                Обсудим главные вызовы, обменяемся опытом и найдём новые решения.  
+                Встречаемся в Технохабе, чтобы прокачать HR-стратегию.
+            </p>
+            <div class="event-meta">
+                <div class="meta-item">📍 Санкт-Петербург, Технохаб, Уральская 1</div>
+                <div class="meta-item">📅 7 августа 2026, 10:00 – 16:00</div>
+                <div class="meta-item">👥 До 25 участников</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="speakers">
+        <div class="container">
+            <h2 class="section-title">Спикеры</h2>
+            <div class="speakers-grid">
+                <div class="speaker-card">
+                    <div class="speaker-name">Эксперт Работа.ру</div>
+                    <div class="speaker-company">Работа.ру</div>
+                    <div class="speaker-theme">Рынок труда 2026: тренды для топов</div>
+                </div>
+                <div class="speaker-card">
+                    <div class="speaker-name">Представитель Эвотор</div>
+                    <div class="speaker-company">Эвотор</div>
+                    <div class="speaker-theme">HR-аналитика и автоматизация</div>
+                </div>
+                <div class="speaker-card">
+                    <div class="speaker-name">Сотрудник ЦА</div>
+                    <div class="speaker-company">Центральный аппарат</div>
+                    <div class="speaker-theme">Практика работы с командами</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="program">
+        <div class="container">
+            <h2 class="section-title">Программа дня</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="time">10:00 – 11:00</div>
+                    <div class="desc">Сбор гостей, приветственный кофе, нетворкинг</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="time">11:00 – 13:00</div>
+                    <div class="desc">Ключевые темы: рынок, аналитика, практика</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="time">13:00 – 14:00</div>
+                    <div class="desc">Кофе-брейк, живое общение</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="time">14:00 – 15:30</div>
+                    <div class="desc">Дискуссия, кейсы, ответы на вопросы</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="time">15:30 – 16:00</div>
+                    <div class="desc">Заключение, планы на будущее</div>
+                </div>
+            </div>
+            <p class="program-note">* Полная программа с темами выступлений будет направлена после регистрации</p>
+        </div>
+    </section>
+
+    <section class="register">
+        <div class="container">
+            <div class="form-card">
+                <h2 class="form-title">Участие бесплатное</h2>
+                <p class="form-subtitle">Заполните форму, чтобы закрепить место</p>
+                <form id="registrationForm">
+                    <div class="form-group">
+                        <label>ФИО полностью *</label>
+                        <input type="text" name="fio" required placeholder="Иванов Иван Иванович">
+                    </div>
+                    <div class="form-group">
+                        <label>ИНН организации *</label>
+                        <input type="text" name="inn" required placeholder="123456789012">
+                    </div>
+                    <div class="form-group">
+                        <label>Мобильный телефон *</label>
+                        <input type="tel" name="phone" required placeholder="+7 999 999-99-99">
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" name="email" required placeholder="ivan@company.ru">
+                    </div>
+                    <button type="submit" class="btn-primary">Зарегистрироваться</button>
+                </form>
+                <p class="form-footnote">После регистрации вы получите подтверждение на почту</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>Организатор: HR-партнёр клиентов • Контакты для связи: после регистрации направим все детали</p>
+    </footer>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
