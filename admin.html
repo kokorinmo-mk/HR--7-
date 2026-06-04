@@ -2,114 +2,500 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>HR-день | Встреча топ-клиентов | 7 августа 2026</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Подключаем библиотеку Inputmask -->
-    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.8/dist/inputmask.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель | HR-день</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        h1 {
+            color: #1a3e2b;
+            font-size: 24px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: #e8f5e9;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        /* Login form */
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            color: #1a3e2b;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background: #1a6e2f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .login-container button:hover {
+            background: #0e5524;
+        }
+
+        /* Controls */
+        .controls {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .export-btn {
+            background: #1a6e2f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .export-btn:hover {
+            background: #0e5524;
+        }
+
+        .refresh-btn {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Table */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+        }
+
+        th:hover {
+            background: #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-present {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .status-absent {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .status-select {
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #f44336;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .delete-btn:hover {
+            color: #d32f2f;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-    <section class="hero">
-        <div class="container">
-            <div class="badge">Только для ключевых клиентов</div>
-            <h1>HR-день для топ-команд<br>7 августа 2026</h1>
-            <p class="hero-desc">
-                Обсудим главные вызовы, обменяемся опытом и найдём новые решения.  
-                Встречаемся в Технохабе, чтобы прокачать HR-стратегию.
-            </p>
-            <div class="event-meta">
-                <div class="meta-item">📍 Санкт-Петербург, Технохаб, Уральская 1</div>
-                <div class="meta-item">📅 7 августа 2026, 10:00 – 16:00</div>
-                <div class="meta-item">👥 До 25 участников</div>
-            </div>
-        </div>
-    </section>
+    <div class="container" id="app">
+        <!-- Контент будет загружен через JS -->
+    </div>
 
-    <section class="speakers">
-        <div class="container">
-            <h2 class="section-title">Спикеры</h2>
-            <div class="speakers-grid">
-                <div class="speaker-card">
-                    <div class="speaker-name">Эксперт Работа.ру</div>
-                    <div class="speaker-company">Работа.ру</div>
-                    <div class="speaker-theme">Рынок труда 2026: тренды для топов</div>
-                </div>
-                <div class="speaker-card">
-                    <div class="speaker-name">Представитель Эвотор</div>
-                    <div class="speaker-company">Эвотор</div>
-                    <div class="speaker-theme">HR-аналитика и автоматизация</div>
-                </div>
-                <div class="speaker-card">
-                    <div class="speaker-name">Сотрудник ЦА</div>
-                    <div class="speaker-company">Центральный аппарат</div>
-                    <div class="speaker-theme">Практика работы с командами</div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
-    <section class="program">
-        <div class="container">
-            <h2 class="section-title">Программа дня</h2>
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="time">10:00 – 11:00</div>
-                    <div class="desc">Сбор гостей, приветственный кофе, нетворкинг</div>
-                </div>
-                <div class="timeline-item">
-                    <div class="time">11:00 – 13:00</div>
-                    <div class="desc">Ключевые темы: рынок, аналитика, практика</div>
-                </div>
-                <div class="timeline-item">
-                    <div class="time">13:00 – 14:00</div>
-                    <div class="desc">Кофе-брейк, живое общение</div>
-                </div>
-                <div class="timeline-item">
-                    <div class="time">14:00 – 15:30</div>
-                    <div class="desc">Дискуссия, кейсы, ответы на вопросы</div>
-                </div>
-                <div class="timeline-item">
-                    <div class="time">15:30 – 16:00</div>
-                    <div class="desc">Заключение, планы на будущее</div>
-                </div>
-            </div>
-            <p class="program-note">* Полная программа с темами выступлений будет направлена после регистрации</p>
-        </div>
-    </section>
+        // Firebase конфиг
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8qFPrmIXQXNxdwE18rVK38t72NQ6LDzo",
+            authDomain: "august2026-b6693.firebaseapp.com",
+            projectId: "august2026-b6693",
+            storageBucket: "august2026-b6693.firebasestorage.app",
+            messagingSenderId: "473438787105",
+            appId: "1:473438787105:web:7e486b3aa1fa8e7380b560",
+            measurementId: "G-FDR9WNYYYX"
+        };
 
-    <section class="register">
-        <div class="container">
-            <div class="form-card">
-                <h2 class="form-title">Участие бесплатное</h2>
-                <p class="form-subtitle">Заполните форму, чтобы закрепить место</p>
-                <form id="registrationForm">
-                    <div class="form-group">
-                        <label>ФИО полностью *</label>
-                        <input type="text" name="fio" required placeholder="Иванов Иван Иванович">
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        // ПАРОЛЬ ДЛЯ ВХОДА (смени на свой)
+        const ADMIN_PASSWORD = "hrday2026";
+
+        let currentData = [];
+        let sortField = 'registeredAt';
+        let sortDirection = 'desc';
+
+        // Проверка авторизации
+        function checkAuth() {
+            return sessionStorage.getItem('adminAuth') === ADMIN_PASSWORD;
+        }
+
+        // Форма входа
+        function renderLogin() {
+            return `
+                <div class="login-container">
+                    <h2>🔐 Вход в админ-панель</h2>
+                    <input type="password" id="passwordInput" placeholder="Введите пароль">
+                    <button id="loginBtn">Войти</button>
+                </div>
+            `;
+        }
+
+        // Загрузка данных из Firebase
+        async function loadData() {
+            const container = document.getElementById('app');
+            container.innerHTML = '<div class="loading">📦 Загрузка данных...</div>';
+            
+            try {
+                const querySnapshot = await getDocs(collection(db, "registrations"));
+                currentData = [];
+                querySnapshot.forEach((doc) => {
+                    currentData.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                renderAdminPanel();
+            } catch (error) {
+                console.error("Ошибка загрузки:", error);
+                container.innerHTML = '<div class="error">❌ Ошибка загрузки данных. Проверьте подключение.</div>';
+            }
+        }
+
+        // Сортировка
+        function sortData() {
+            return [...currentData].sort((a, b) => {
+                let valA = a[sortField] || '';
+                let valB = b[sortField] || '';
+                
+                if (sortField === 'registeredAt') {
+                    valA = new Date(valA);
+                    valB = new Date(valB);
+                }
+                
+                if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+                if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        // Экспорт в CSV
+        function exportToCSV() {
+            const data = sortData();
+            const headers = ['ФИО', 'ИНН', 'Телефон', 'Email', 'Статус', 'Дата регистрации'];
+            const rows = data.map(item => [
+                item.fio,
+                item.inn,
+                item.phone,
+                item.email,
+                item.status || 'ожидает',
+                new Date(item.registeredAt).toLocaleString('ru-RU')
+            ]);
+            
+            const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.setAttribute('download', 'registrations.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Удаление записи
+        async function deleteRecord(id) {
+            if (confirm('Удалить регистрацию?')) {
+                await deleteDoc(doc(db, "registrations", id));
+                await loadData();
+            }
+        }
+
+        // Обновление статуса
+        async function updateStatus(id, status) {
+            await updateDoc(doc(db, "registrations", id), { status: status });
+            await loadData();
+        }
+
+        // Фильтрация
+        function filterData(data, searchTerm) {
+            if (!searchTerm) return data;
+            const term = searchTerm.toLowerCase();
+            return data.filter(item => 
+                item.fio?.toLowerCase().includes(term) ||
+                item.inn?.toLowerCase().includes(term) ||
+                item.email?.toLowerCase().includes(term) ||
+                item.phone?.toLowerCase().includes(term)
+            );
+        }
+
+        // Рендер админ-панели
+        function renderAdminPanel() {
+            const searchTerm = document.getElementById('searchInput')?.value || '';
+            const filtered = filterData(sortData(), searchTerm);
+            
+            const html = `
+                <div class="header">
+                    <h1>📋 HR-день | Панель управления</h1>
+                    <div class="stats">
+                        <div class="stat-card">📊 Всего: ${currentData.length}</div>
+                        <div class="stat-card">✅ ${currentData.filter(d => d.status === 'present').length} пришли</div>
+                        <div class="stat-card">❌ ${currentData.filter(d => d.status === 'absent').length} не пришли</div>
                     </div>
-                    <div class="form-group">
-                        <label>ИНН организации *</label>
-                        <input type="text" name="inn" required placeholder="123456789012">
+                </div>
+                
+                <div class="controls">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="🔍 Поиск по ФИО, ИНН, телефону, email..." value="${searchTerm}">
                     </div>
-                    <div class="form-group">
-                        <label>Мобильный телефон *</label>
-                        <input type="tel" name="phone" required placeholder="+7 999 999-99-99">
-                    </div>
-                    <div class="form-group">
-                        <label>Email *</label>
-                        <input type="email" name="email" required placeholder="ivan@company.ru">
-                    </div>
-                    <button type="submit" class="btn-primary">Зарегистрироваться</button>
-                </form>
-                <p class="form-footnote">После регистрации вы получите подтверждение на почту</p>
-            </div>
-        </div>
-    </section>
+                    <button class="export-btn" id="exportBtn">📎 Экспорт в CSV</button>
+                    <button class="refresh-btn" id="refreshBtn">🔄 Обновить</button>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-field="fio">ФИО ${sortField === 'fio' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
+                                <th data-field="inn">ИНН ${sortField === 'inn' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
+                                <th data-field="phone">Телефон ${sortField === 'phone' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
+                                <th data-field="email">Email ${sortField === 'email' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
+                                <th>Статус</th>
+                                <th data-field="registeredAt">Дата регистрации ${sortField === 'registeredAt' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filtered.map(item => `
+                                <tr>
+                                    <td>${escapeHtml(item.fio || '')}</td>
+                                    <td>${escapeHtml(item.inn || '')}</td>
+                                    <td>${escapeHtml(item.phone || '')}</td>
+                                    <td>${escapeHtml(item.email || '')}</td>
+                                    <td>
+                                        <select class="status-select" data-id="${item.id}" data-status="${item.status || 'pending'}">
+                                            <option value="pending" ${(item.status || 'pending') === 'pending' ? 'selected' : ''}>⏳ ожидает</option>
+                                            <option value="present" ${item.status === 'present' ? 'selected' : ''}>✅ пришёл</option>
+                                            <option value="absent" ${item.status === 'absent' ? 'selected' : ''}>❌ не пришёл</option>
+                                        </select>
+                                    </td>
+                                    <td>${new Date(item.registeredAt).toLocaleString('ru-RU')}</td>
+                                    <td>
+                                        <button class="delete-btn" data-id="${item.id}">🗑️</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            document.getElementById('app').innerHTML = html;
+            
+            // Вешаем обработчики
+            document.getElementById('searchInput')?.addEventListener('input', () => renderAdminPanel());
+            document.getElementById('exportBtn')?.addEventListener('click', exportToCSV);
+            document.getElementById('refreshBtn')?.addEventListener('click', loadData);
+            
+            document.querySelectorAll('th[data-field]').forEach(th => {
+                th.addEventListener('click', () => {
+                    const field = th.dataset.field;
+                    if (sortField === field) {
+                        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        sortField = field;
+                        sortDirection = 'asc';
+                    }
+                    renderAdminPanel();
+                });
+            });
+            
+            document.querySelectorAll('.status-select').forEach(select => {
+                select.addEventListener('change', (e) => {
+                    const id = select.dataset.id;
+                    const status = e.target.value;
+                    updateStatus(id, status);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = btn.dataset.id;
+                    deleteRecord(id);
+                });
+            });
+        }
 
-    <footer class="footer">
-        <p>Организатор: HR-партнёр клиентов • Контакты для связи: после регистрации направим все детали</p>
-    </footer>
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
 
-    <script type="module" src="script.js"></script>
+        // Инициализация
+        function init() {
+            const container = document.getElementById('app');
+            
+            if (!checkAuth()) {
+                container.innerHTML = renderLogin();
+                document.getElementById('loginBtn')?.addEventListener('click', () => {
+                    const password = document.getElementById('passwordInput').value;
+                    if (password === ADMIN_PASSWORD) {
+                        sessionStorage.setItem('adminAuth', password);
+                        loadData();
+                    } else {
+                        alert('Неверный пароль!');
+                    }
+                });
+            } else {
+                loadData();
+            }
+        }
+
+        init();
+    </script>
 </body>
 </html>
