@@ -16,9 +16,10 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
+// Маска телефона
 function setupPhoneMask() {
     const phoneInput = document.querySelector('input[name="phone"]');
-    if (phoneInput && typeof Inputmask !== 'undefined') {
+    if (phoneInput && window.Inputmask) {
         Inputmask({
             mask: "+7 999 999-99-99",
             showMaskOnHover: false,
@@ -27,32 +28,6 @@ function setupPhoneMask() {
             placeholder: "_",
             removeMaskOnSubmit: false
         }).mask(phoneInput);
-    }
-}
-
-async function checkDuplicate(email, phoneDigits) {
-    try {
-        // Проверка по email
-        const emailQuery = query(collection(db, "registrations"), where("email", "==", email));
-        const emailSnapshot = await getDocs(emailQuery);
-        
-        if (!emailSnapshot.empty) {
-            return { isDuplicate: true, field: "email" };
-        }
-        
-        // Проверка по телефону
-        const phoneQuery = query(collection(db, "registrations"), where("phone", "==", phoneDigits));
-        const phoneSnapshot = await getDocs(phoneQuery);
-        
-        if (!phoneSnapshot.empty) {
-            return { isDuplicate: true, field: "phone" };
-        }
-        
-        return { isDuplicate: false };
-    } catch (error) {
-        console.error("Ошибка при проверке дубликатов:", error);
-        // Если ошибка, разрешаем регистрацию (чтобы не блокировать пользователя)
-        return { isDuplicate: false, error: true };
     }
 }
 
@@ -92,19 +67,30 @@ form.addEventListener('submit', async (event) => {
     submitBtn.textContent = "Проверка...";
 
     try {
-        const duplicateCheck = await checkDuplicate(email, phoneDigits);
+        // ПРОВЕРКА НА ДУБЛИКАТЫ
+        // Проверяем email
+        const emailQuery = query(collection(db, "registrations"), where("email", "==", email));
+        const emailResult = await getDocs(emailQuery);
         
-        if (duplicateCheck.isDuplicate) {
-            if (duplicateCheck.field === "email") {
-                alert("❌ Этот email уже зарегистрирован на мероприятие");
-            } else if (duplicateCheck.field === "phone") {
-                alert("❌ Этот номер телефона уже зарегистрирован на мероприятие");
-            }
+        if (!emailResult.empty) {
+            alert("❌ Этот email уже зарегистрирован на мероприятие");
             submitBtn.disabled = false;
             submitBtn.textContent = "Зарегистрироваться";
             return;
         }
         
+        // Проверяем телефон
+        const phoneQuery = query(collection(db, "registrations"), where("phone", "==", phoneDigits));
+        const phoneResult = await getDocs(phoneQuery);
+        
+        if (!phoneResult.empty) {
+            alert("❌ Этот номер телефона уже зарегистрирован на мероприятие");
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Зарегистрироваться";
+            return;
+        }
+        
+        // Если всё ок — регистрируем
         submitBtn.textContent = "Регистрация...";
         
         await addDoc(collection(db, "registrations"), {
@@ -124,16 +110,8 @@ form.addEventListener('submit', async (event) => {
         }, 10);
         
     } catch (error) {
-        console.error("Ошибка регистрации:", error);
-        
-        // Детальная обработка ошибок Firebase
-        if (error.code === 'permission-denied') {
-            alert("❌ Ошибка доступа к базе данных. Проверьте правила Firestore.");
-        } else if (error.code === 'unavailable') {
-            alert("❌ Сервер временно недоступен. Попробуйте позже.");
-        } else {
-            alert("❌ Ошибка регистрации: " + (error.message || "Попробуйте позже"));
-        }
+        console.error("Ошибка:", error);
+        alert("❌ Ошибка регистрации. Попробуйте позже.");
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = "Зарегистрироваться";
