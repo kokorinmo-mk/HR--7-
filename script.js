@@ -17,111 +17,28 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
-// === ПРОСТАЯ МАСКА ТЕЛЕФОНА (без багов) ===
+// === МАСКА ТЕЛЕФОНА через Inputmask ===
 function setupPhoneMask() {
     const phoneInput = document.querySelector('input[name="phone"]');
     
-    phoneInput.addEventListener('input', function(e) {
-        // Запоминаем, где был курсор
-        const cursorPos = this.selectionStart;
-        
-        // Убираем всё кроме цифр
-        let digits = this.value.replace(/\D/g, '');
-        
-        // Ограничиваем 11 цифрами
-        if (digits.length > 11) digits = digits.slice(0, 11);
-        
-        // Форматируем
-        let formatted = '';
-        if (digits.length > 0) {
-            // Первая цифра всегда 7 (или заменяем на 7)
-            if (digits[0] !== '7') {
-                digits = '7' + digits.slice(1);
-            }
-            formatted = '+7';
-            
-            if (digits.length > 1) {
-                const code = digits.slice(1, 4);
-                formatted += ' (' + code;
-            }
-            if (digits.length > 4) {
-                const part1 = digits.slice(4, 7);
-                formatted += ') ' + part1;
-            }
-            if (digits.length > 7) {
-                const part2 = digits.slice(7, 9);
-                formatted += '-' + part2;
-            }
-            if (digits.length > 9) {
-                const part3 = digits.slice(9, 11);
-                formatted += '-' + part3;
-            }
-            
-            // Добавляем закрывающую скобку если есть код
-            if (digits.length >= 4 && digits.length <= 7) {
-                formatted = formatted.replace('(', '+7 (').replace(')', '');
-                if (digits.length >= 4) formatted = formatted.slice(0, 6) + ')' + formatted.slice(6);
-            }
-        }
-        
-        // Упрощённый вариант форматирования
-        if (digits.length === 0) {
-            formatted = '';
-        } else if (digits.length <= 1) {
-            formatted = '+7';
-        } else if (digits.length <= 4) {
-            formatted = `+7 (${digits.slice(1)}`;
-        } else if (digits.length <= 7) {
-            formatted = `+7 (${digits.slice(1, 4)}) ${digits.slice(4)}`;
-        } else if (digits.length <= 9) {
-            formatted = `+7 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
-        } else {
-            formatted = `+7 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7, 9)}-${digits.slice(9, 11)}`;
-        }
-        
-        // Обновляем значение
-        this.value = formatted;
-        
-        // Пытаемся восстановить курсор
-        let newCursorPos = cursorPos;
-        if (formatted.length < cursorPos) {
-            newCursorPos = formatted.length;
-        }
-        this.setSelectionRange(newCursorPos, newCursorPos);
-    });
-    
-    // Обработка клавиш
-    phoneInput.addEventListener('keydown', function(e) {
-        // Разрешаем Backspace, Delete, стрелки
-        const navigationKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 
-                               'ArrowLeft', 'ArrowRight', 'Home', 'End'];
-        if (navigationKeys.includes(e.key)) {
-            return;
-        }
-        
-        // Разрешаем Ctrl/Cmd комбинации
-        if (e.ctrlKey || e.metaKey) {
-            return;
-        }
-        
-        // Остальное — только цифры
-        if (!/^\d$/.test(e.key)) {
-            e.preventDefault();
-        }
-    });
-    
-    // При фокусе, если пусто — ставим +7
-    phoneInput.addEventListener('focus', function() {
-        if (this.value === '') {
-            this.value = '+7';
-        }
-    });
+    // Настройка маски
+    Inputmask({
+        mask: "+7 (999) 999-99-99",
+        showMaskOnHover: false,
+        showMaskOnFocus: true,
+        clearIncomplete: false,
+        placeholder: "_",
+        removeMaskOnSubmit: false
+    }).mask(phoneInput);
 }
 
 // === ОБРАБОТЧИК РЕГИСТРАЦИИ ===
 const form = document.getElementById('registrationForm');
 
-setupPhoneMask();
+// Запускаем маску после загрузки страницы
+document.addEventListener('DOMContentLoaded', function() {
+    setupPhoneMask();
+});
 
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -131,10 +48,12 @@ form.addEventListener('submit', async (event) => {
     let phone = form.phone.value.trim();
     const email = form.email.value.trim();
 
-    // Проверяем телефон (должно быть 11 цифр)
+    // Убираем все не-цифры из телефона для проверки
     const phoneDigits = phone.replace(/\D/g, '');
+    
+    // Проверяем: должно быть 11 цифр
     if (phoneDigits.length !== 11) {
-        alert("❌ Введите корректный номер телефона (11 цифр после +7)");
+        alert("❌ Введите корректный номер телефона (11 цифр)");
         return;
     }
 
@@ -151,15 +70,18 @@ form.addEventListener('submit', async (event) => {
         await addDoc(collection(db, "registrations"), {
             fio: fio,
             inn: inn,
-            phone: phone,
+            phone: phoneDigits,
             email: email,
             registeredAt: new Date().toISOString()
         });
 
         alert("✅ Вы успешно зарегистрированы! Ждём вас 7 августа.");
         form.reset();
-        const phoneInput = document.querySelector('input[name="phone"]');
-        phoneInput.value = '+7';
+        // Сбрасываем маску после очистки формы
+        setTimeout(() => {
+            const phoneInput = document.querySelector('input[name="phone"]');
+            if (phoneInput) phoneInput.value = '';
+        }, 10);
     } catch (error) {
         console.error("Ошибка:", error);
         alert("❌ Ошибка регистрации. Попробуйте позже.");
