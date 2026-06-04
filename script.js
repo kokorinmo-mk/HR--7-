@@ -23,7 +23,7 @@ function setupPhoneMask() {
     
     // Настройка маски
     Inputmask({
-        mask: "+7 (999) 999-99-99",
+        mask: "+7 999 999-99-99",
         showMaskOnHover: false,
         showMaskOnFocus: true,
         clearIncomplete: false,
