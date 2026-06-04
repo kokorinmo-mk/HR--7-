@@ -18,78 +18,57 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
-// === МАСКА ДЛЯ ТЕЛЕФОНА ===
-function phoneMask(input) {
-    // Убираем всё кроме цифр
-    let digits = input.value.replace(/\D/g, '');
-    
-    // Ограничиваем 11 цифрами (без +7)
-    if (digits.length > 11) digits = digits.slice(0, 11);
-    
-    // Форматируем
-    let formatted = '';
-    if (digits.length === 0) {
-        formatted = '';
-    } else {
-        // Начинаем с +7
-        formatted = '+7';
-        
-        // Код оператора (3 цифры)
-        if (digits.length >= 1) {
-            formatted += ' (' + digits.slice(0, 3);
-        }
-        if (digits.length >= 4) {
-            formatted += ') ' + digits.slice(3, 6);
-        }
-        if (digits.length >= 7) {
-            formatted += '-' + digits.slice(6, 8);
-        }
-        if (digits.length >= 9) {
-            formatted += '-' + digits.slice(8, 10);
-        }
-    }
-    
-    input.value = formatted;
-    
-    // Ставим курсор в конец
-    const len = input.value.length;
-    input.setSelectionRange(len, len);
-}
-
-// Обработчик ввода телефона
+// === ПРОСТАЯ И НАДЁЖНАЯ МАСКА ТЕЛЕФОНА ===
 function setupPhoneMask() {
     const phoneInput = document.querySelector('input[name="phone"]');
     
     phoneInput.addEventListener('input', function(e) {
-        phoneMask(this);
+        let value = this.value;
+        
+        // Убираем всё, кроме цифр
+        let digits = value.replace(/\D/g, '');
+        
+        // Ограничиваем 11 цифрами
+        if (digits.length > 11) digits = digits.slice(0, 11);
+        
+        // Форматируем
+        let formatted = '';
+        if (digits.length > 0) {
+            formatted = '+7';
+            if (digits.length >= 1) {
+                formatted += ' (' + digits.slice(0, 3);
+            }
+            if (digits.length >= 4) {
+                formatted += ') ' + digits.slice(3, 6);
+            }
+            if (digits.length >= 7) {
+                formatted += '-' + digits.slice(6, 8);
+            }
+            if (digits.length >= 9) {
+                formatted += '-' + digits.slice(8, 10);
+            }
+        }
+        
+        this.value = formatted;
     });
     
+    // Обработка клавиш
     phoneInput.addEventListener('keydown', function(e) {
-        // Разрешаем backspace, delete, tab, escape, enter и т.д.
-        const key = e.key;
-        if (key === 'Backspace' || key === 'Delete' || key === 'Tab' || 
-            key === 'Escape' || key === 'Enter' || key === 'ArrowLeft' || 
-            key === 'ArrowRight' || key === 'Home' || key === 'End') {
+        // Разрешаем Backspace, Delete, Tab, Escape, Enter, стрелки
+        const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 
+                             'ArrowLeft', 'ArrowRight', 'Home', 'End'];
+        if (allowedKeys.includes(e.key)) {
             return;
         }
         
-        // Запрещаем ввод не-цифр
-        if (!/^\d$/.test(key)) {
+        // Разрешаем Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        if (e.ctrlKey && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase())) {
+            return;
+        }
+        
+        // Остальное разрешаем только цифры
+        if (!/^\d$/.test(e.key)) {
             e.preventDefault();
-        }
-    });
-    
-    // Очищаем поле при фокусе, если там только +7
-    phoneInput.addEventListener('focus', function() {
-        if (this.value === '+7') {
-            this.value = '';
-        }
-    });
-    
-    // Убираем курсор если поле пустое
-    phoneInput.addEventListener('blur', function() {
-        if (this.value === '' || this.value === '+7') {
-            this.value = '';
         }
     });
 }
@@ -97,7 +76,7 @@ function setupPhoneMask() {
 // === ОБРАБОТЧИК РЕГИСТРАЦИИ ===
 const form = document.getElementById('registrationForm');
 
-// Инициализируем маску при загрузке
+// Запускаем маску
 setupPhoneMask();
 
 form.addEventListener('submit', async (event) => {
@@ -108,15 +87,15 @@ form.addEventListener('submit', async (event) => {
     let phone = form.phone.value.trim();
     const email = form.email.value.trim();
 
-    // Валидация телефона (должен содержать 11 цифр)
+    // Проверяем телефон (должно быть 11 цифр)
     const phoneDigits = phone.replace(/\D/g, '');
     if (phoneDigits.length !== 11) {
         alert("❌ Введите корректный номер телефона (11 цифр после +7)");
         return;
     }
 
-    if (!fio || !inn || !phone || !email) {
-        alert("Пожалуйста, заполните все поля");
+    if (!fio || !inn || !email) {
+        alert("❌ Пожалуйста, заполните все поля");
         return;
     }
 
